@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EkklesiaMx — ¿Quién Eres?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@1,400;1,600&display=swap" rel="stylesheet">
+<style>
+/* ── PALETTE ──
+   BG          #0C0F12   near-black
+   SURFACE     #16152F   dark navy
+   ORANGE      #FE7E3C   burnt orange
+   RED         #E4201B   lust
+   TEAL        #0E6873   blue lagoon
+   PEACH       #FFA586   warm highlight
+   CREAM       #F2EDE4   text
+   COPPER      #61413C   deep warm
+*/
+:root{
+  --bg:#0C0F12; --surface:#16152F; --surface2:#1e1a3a;
+  --orange:#FE7E3C; --red:#E4201B; --teal:#0E6873;
+  --peach:#FFA586; --cream:#F2EDE4; --copper:#61413C;
+  --dim:rgba(242,237,228,0.55); --dimmer:rgba(242,237,228,0.3);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Oswald',sans-serif;background:var(--bg);color:var(--cream);overflow-x:hidden;cursor:none;}
+
+/* ── GRAIN ── */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:998;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+  background-size:180px;opacity:.07;mix-blend-mode:overlay;}
+
+/* ── FLOATING ORBS (fixed bg) ── */
+.orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);animation:drift linear infinite alternate;}
+.orb1{width:500px;height:500px;background:radial-gradient(circle,var(--orange) 0%,transparent 65%);top:-100px;left:-150px;opacity:.35;animation-duration:18s;}
+.orb2{width:600px;height:600px;background:radial-gradient(circle,var(--teal) 0%,transparent 65%);bottom:-150px;right:-200px;opacity:.28;animation-duration:22s;}
+.orb3{width:350px;height:350px;background:radial-gradient(circle,var(--red) 0%,transparent 65%);top:40%;left:50%;opacity:.18;animation-duration:15s;animation-delay:-8s;}
+@keyframes drift{0%{transform:translate(0,0) scale(1);}100%{transform:translate(60px,40px) scale(1.15);}}
+
+/* ── DOT CURSOR ── */
+#dot{position:fixed;width:7px;height:7px;background:var(--orange);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:background .2s,transform .1s;}
+@media(pointer:coarse){body{cursor:auto;}#dot{display:none;}}
+
+/* ── PROGRESS BAR ── */
+#prog{position:fixed;top:0;left:0;height:2px;width:0%;background:linear-gradient(90deg,var(--teal),var(--orange),var(--red));z-index:300;}
+
+/* ── NAV ── */
+nav{position:fixed;top:2px;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:20px 36px;background:rgba(12,15,18,.7);backdrop-filter:blur(20px);border-bottom:1px solid rgba(254,126,60,.1);}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:var(--cream);text-decoration:none;}
+.nav-logo span{color:var(--orange);}
+
+/* ── HAMBURGER: 3 colored lines ── */
+.burger{display:flex;flex-direction:column;gap:6px;cursor:none;padding:8px;border-radius:8px;transition:background .2s;}
+.burger:hover{background:rgba(254,126,60,.1);}
+.burger span{display:block;height:2px;border-radius:2px;transition:transform .35s cubic-bezier(.23,1,.32,1),opacity .25s,width .3s;}
+.burger span:nth-child(1){width:28px;background:var(--teal);}
+.burger span:nth-child(2){width:22px;background:linear-gradient(90deg,var(--teal),var(--orange));}
+.burger span:nth-child(3){width:18px;background:var(--orange);}
+.burger.open span:nth-child(1){transform:translateY(8px) rotate(45deg);width:24px;background:var(--cream);}
+.burger.open span:nth-child(2){opacity:0;width:0;}
+.burger.open span:nth-child(3){transform:translateY(-8px) rotate(-45deg);width:24px;background:var(--cream);}
+
+/* ── MENU OVERLAY ── */
+.menu-ov{position:fixed;inset:0;z-index:150;background:#F2EDE4;display:flex;align-items:center;justify-content:flex-end;padding:0 8vw;pointer-events:none;clip-path:circle(0% at calc(100% - 60px) 44px);transition:clip-path .65s cubic-bezier(.77,0,.175,1);}
+.menu-ov.open{pointer-events:all;clip-path:circle(150% at calc(100% - 60px) 44px);}
+.menu-list{display:flex;flex-direction:column;gap:2px;text-align:right;}
+.menu-list a{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5.5vw,56px);font-weight:400;color:rgba(12,15,18,.3);text-decoration:none;letter-spacing:.05em;line-height:1.15;display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:5px 0;transform:translateX(24px);opacity:0;transition:color .2s,transform .35s cubic-bezier(.34,1.56,.64,1),text-shadow .2s,font-size .2s;border-top:1px solid rgba(12,15,18,.06);}
+.menu-list a:first-child{border-top:none;}
+.menu-ov.open .menu-list a{opacity:1;transform:translateX(0);}
+.menu-list a:hover{color:#0C0F12;transform:translateX(-4px) scale(1.04) !important;text-shadow:0 0 40px rgba(254,126,60,.5),0 0 80px rgba(254,126,60,.2);}
+.menu-list a.act{color:rgba(12,15,18,.75);text-shadow:0 0 24px rgba(14,104,115,.5);}
+.menu-list a .mn{font-size:10px;font-family:'Oswald',sans-serif;font-weight:300;letter-spacing:.2em;opacity:.35;margin-right:8px;}
+/* stagger */
+.menu-list a:nth-child(1){transition-delay:.03s}.menu-list a:nth-child(2){transition-delay:.07s}.menu-list a:nth-child(3){transition-delay:.11s}.menu-list a:nth-child(4){transition-delay:.14s}.menu-list a:nth-child(5){transition-delay:.17s}.menu-list a:nth-child(6){transition-delay:.20s}.menu-list a:nth-child(7){transition-delay:.23s}.menu-list a:nth-child(8){transition-delay:.26s}.menu-list a:nth-child(9){transition-delay:.29s}.menu-list a:nth-child(10){transition-delay:.32s}.menu-list a:nth-child(11){transition-delay:.35s}
+.menu-brand{position:absolute;bottom:36px;left:8vw;font-family:'Bebas Neue',sans-serif;font-size:32px;color:rgba(12,15,18,.12);letter-spacing:.12em;}
+
+/* ── MODAL INTRO ── */
+#modal-id{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:rgba(12,15,18,.97);backdrop-filter:blur(16px);}
+#modal-id.out{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .6s,visibility .6s;}
+.modal-box{text-align:center;max-width:520px;padding:56px 40px;position:relative;}
+.modal-orb1{position:absolute;width:320px;height:320px;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,var(--orange),transparent 65%);opacity:.15;filter:blur(40px);animation:drift 6s ease-in-out infinite alternate;}
+.modal-orb2{position:absolute;width:280px;height:280px;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,var(--teal),transparent 65%);opacity:.12;filter:blur(50px);animation:drift 9s ease-in-out infinite alternate-reverse;}
+.modal-cross{font-size:28px;display:block;margin-bottom:20px;position:relative;z-index:2;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(30px,6vw,52px);color:var(--cream);letter-spacing:.08em;line-height:1.05;margin-bottom:16px;position:relative;z-index:2;}
+.modal-verse{font-family:'Cormorant Garamond',serif;font-size:clamp(17px,2.5vw,21px);font-style:italic;color:var(--dim);line-height:1.6;margin-bottom:8px;position:relative;z-index:2;}
+.modal-ref{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:36px;display:block;position:relative;z-index:2;}
+#btn-start{background:var(--cream);color:#0C0F12;border:none;border-radius:4px;padding:15px 44px;font-family:'Oswald',sans-serif;font-size:13px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;cursor:none;transition:transform .25s,box-shadow .25s,background .2s;position:relative;z-index:2;}
+#btn-start:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(254,126,60,.3);background:#fff;}
+#btn-skip{background:none;border:none;color:var(--dimmer);font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;cursor:none;margin-top:16px;display:block;transition:color .2s;position:relative;z-index:2;}
+#btn-skip:hover{color:var(--dim);}
+
+/* ── SECTIONS BASE ── */
+section{padding:100px 24px;position:relative;z-index:1;}
+.ctr{max-width:920px;margin:0 auto;}
+.lbl{font-family:'Oswald',sans-serif;font-size:10px;font-weight:400;letter-spacing:.3em;text-transform:uppercase;color:var(--orange);opacity:.8;margin-bottom:14px;display:block;}
+.ttl{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,9vw,110px);line-height:.92;letter-spacing:.04em;color:var(--cream);margin-bottom:28px;}
+.body{font-family:'Oswald',sans-serif;font-size:16px;font-weight:300;line-height:1.75;color:var(--dim);max-width:600px;}
+.verse-card{margin:28px 0;padding:24px 28px;background:rgba(254,126,60,.06);border-left:2px solid var(--orange);border-radius:2px 10px 10px 2px;transition:background .3s;}
+.verse-card:hover{background:rgba(254,126,60,.1);}
+.v-text{font-family:'Cormorant Garamond',serif;font-size:clamp(17px,2.5vw,22px);font-style:italic;line-height:1.55;color:var(--cream);margin-bottom:8px;}
+.v-ref{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);}
+
+/* ── HERO ── */
+.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative;overflow:hidden;z-index:1;}
+.hero-eyebrow{font-size:11px;font-weight:400;letter-spacing:.3em;text-transform:uppercase;color:var(--orange);opacity:.9;margin-bottom:16px;animation:fadeUp .8s ease both;}
+.hero-ttl{font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,20vw,200px);line-height:.85;letter-spacing:.04em;color:var(--cream);margin-bottom:28px;animation:fadeUp .8s .1s ease both;}
+.hero-sub{font-family:'Oswald',sans-serif;font-size:clamp(13px,2vw,17px);font-weight:400;letter-spacing:.1em;text-transform:uppercase;line-height:1.6;color:var(--dim);max-width:520px;margin:0 auto 16px;animation:fadeUp .8s .2s ease both;}
+.hero-verse-txt{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2vw,20px);font-style:italic;color:var(--dimmer);max-width:440px;margin:0 auto 44px;line-height:1.5;animation:fadeUp .8s .3s ease both;}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;animation:fadeUp .8s .4s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;cursor:none;border:none;transition:transform .2s,box-shadow .2s,background .2s;}
+.btn:hover{transform:translateY(-2px);}
+.btn-fill{background:var(--orange);color:#0C0F12;}
+.btn-fill:hover{box-shadow:0 8px 32px rgba(254,126,60,.4);background:#ff9050;}
+.btn-out{background:transparent;color:var(--cream);border:1px solid rgba(242,237,228,.25);}
+.btn-out:hover{border-color:var(--cream);box-shadow:0 0 24px rgba(242,237,228,.1);}
+.btn-green{background:#25D366;color:#0C0F12;animation:breathe 3s ease-in-out infinite;}
+@keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(37,211,102,.4);}50%{box-shadow:0 0 0 10px rgba(37,211,102,0);}}
+.btn-red{background:#FF0000;color:#fff;}
+.btn-spotify{background:#1DB954;color:#fff;}
+.btn-bible{background:linear-gradient(135deg,var(--peach),var(--orange));color:#0C0F12;}
+
+/* ── DARK CARD ── */
+.dk-card{background:rgba(22,21,47,.5);border:1px solid rgba(254,126,60,.12);border-radius:14px;backdrop-filter:blur(12px);transition:border-color .3s,background .3s;}
+.dk-card:hover{border-color:rgba(254,126,60,.3);background:rgba(22,21,47,.7);}
+
+/* ── 3-COL VERSE GRID ── */
+.v3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px;}
+.v3-card{padding:28px 22px;border-radius:12px;display:flex;flex-direction:column;gap:10px;border:1px solid rgba(242,237,228,.06);transition:transform .3s,border-color .3s;}
+.v3-card:hover{transform:translateY(-6px);border-color:rgba(254,126,60,.2);}
+.v3-card:nth-child(1){background:rgba(14,104,115,.12);}
+.v3-card:nth-child(2){background:rgba(254,126,60,.08);}
+.v3-card:nth-child(3){background:rgba(228,32,27,.08);}
+.v3-card .v-text{font-size:clamp(14px,1.6vw,17px);}
+.v3-card:nth-child(1) .v-ref{color:var(--teal);}
+.v3-card:nth-child(3) .v-ref{color:var(--peach);}
+
+/* ── IDENTITY CARDS ── */
+.id-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-top:44px;}
+.id-card{padding:26px 22px;border-radius:12px;border:1px solid rgba(242,237,228,.07);cursor:none;transition:transform .3s cubic-bezier(.34,1.56,.64,1),border-color .3s,background .3s;background:rgba(22,21,47,.4);}
+.id-card:hover{transform:translateY(-7px) scale(1.02);border-color:rgba(254,126,60,.3);background:rgba(22,21,47,.75);}
+.id-card:nth-child(even){background:rgba(254,126,60,.06);}
+.id-icon{font-size:26px;margin-bottom:12px;display:block;transition:transform .3s;}
+.id-card:hover .id-icon{transform:scale(1.2) rotate(-5deg);}
+.id-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:var(--cream);margin-bottom:4px;}
+.id-ref{font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);}
+.id-card::after{content:'Toca para leer';position:absolute;bottom:10px;right:12px;font-size:8px;letter-spacing:.1em;text-transform:uppercase;opacity:.2;color:var(--cream);}
+.id-card{position:relative;overflow:hidden;}
+
+/* ── MODAL VERSE ── */
+.vmodal{position:fixed;inset:0;z-index:500;background:rgba(12,15,18,.8);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .3s;}
+.vmodal.open{opacity:1;pointer-events:all;}
+.vmodal-box{background:#16152F;border:1px solid rgba(254,126,60,.2);border-radius:20px;max-width:460px;width:100%;padding:44px 36px;position:relative;transform:scale(.93);transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+.vmodal.open .vmodal-box{transform:scale(1);}
+.vmodal-x{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;background:rgba(254,126,60,.1);border:none;color:var(--cream);cursor:none;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s;}
+.vmodal-x:hover{background:rgba(254,126,60,.2);transform:rotate(90deg);}
+.vmodal-icon{font-size:32px;margin-bottom:10px;}
+.vmodal-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.06em;color:var(--cream);margin-bottom:4px;}
+.vmodal-ref{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);margin-bottom:20px;display:block;}
+.vmodal-verse{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;line-height:1.6;color:var(--cream);padding:18px 22px;background:rgba(254,126,60,.07);border-left:2px solid var(--orange);border-radius:2px 10px 10px 2px;margin-bottom:16px;}
+.vmodal-reflection{font-size:14px;font-weight:300;line-height:1.7;color:var(--dim);}
+
+/* ── SPOTIFY COVER ── */
+.sp-layout{display:flex;gap:28px;align-items:center;max-width:640px;margin:40px auto 0;}
+.sp-cover{flex-shrink:0;width:160px;height:160px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,var(--orange),var(--red));position:relative;box-shadow:0 16px 48px rgba(254,126,60,.25);transition:transform .3s;}
+.sp-cover:hover{transform:scale(1.04) rotate(-1deg);}
+.sp-cover img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s;}
+.sp-cover img.on{opacity:1;}
+.sp-loader{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.sp-loader svg{width:36px;height:36px;fill:rgba(255,255,255,.5);animation:spin 2s linear infinite;}
+.sp-info{flex:1;}
+.sp-lbl{font-size:10px;font-weight:400;letter-spacing:.25em;text-transform:uppercase;color:var(--orange);opacity:.8;margin-bottom:6px;display:block;}
+.sp-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(22px,3.5vw,32px);letter-spacing:.04em;color:var(--cream);margin-bottom:4px;}
+.sp-artist{font-size:13px;font-weight:300;color:var(--dim);margin-bottom:20px;}
+.sp-artist span{color:#1DB954;font-weight:500;}
+
+/* ── MUSIC GRID ── */
+.mu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-top:40px;}
+.mu-card{border-radius:12px;overflow:hidden;background:rgba(22,21,47,.4);border:1px solid rgba(242,237,228,.06);text-decoration:none;display:flex;flex-direction:column;transition:transform .3s cubic-bezier(.34,1.56,.64,1),border-color .3s;}
+.mu-card:hover{transform:translateY(-6px) scale(1.01);border-color:rgba(254,126,60,.25);}
+.mu-cover{aspect-ratio:1;position:relative;overflow:hidden;}
+.mu-cover img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s,transform .4s;}
+.mu-cover img.on{opacity:1;}
+.mu-card:hover .mu-cover img{transform:scale(1.06);}
+.mu-sk{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.mu-sk svg{width:30px;height:30px;fill:rgba(255,255,255,.3);animation:spin 2s linear infinite;}
+.mu-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0);transition:background .25s;}
+.mu-card:hover .mu-play{background:rgba(0,0,0,.35);}
+.mu-play svg{width:42px;height:42px;fill:white;opacity:0;transform:scale(.8);transition:opacity .25s,transform .25s;}
+.mu-card:hover .mu-play svg{opacity:1;transform:scale(1);}
+.mu-info{padding:12px 14px 14px;}
+.mu-name{font-family:'Oswald',sans-serif;font-size:13px;font-weight:500;color:var(--cream);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mu-artist{font-size:11px;font-weight:300;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mu-badge{display:inline-flex;align-items:center;gap:4px;margin-top:8px;font-size:8px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#1DB954;}
+.mu-badge svg{width:10px;height:10px;fill:#1DB954;}
+.mu-card.loading .mu-name{background:rgba(255,255,255,.08);border-radius:3px;color:transparent;height:13px;margin-bottom:5px;}
+.mu-card.loading .mu-artist{background:rgba(255,255,255,.05);border-radius:3px;color:transparent;height:11px;width:60%;}
+
+/* ── BIBLE SECTION ── */
+.bible-verse{padding:28px 32px;background:rgba(254,126,60,.05);border-left:2px solid var(--orange);border-radius:2px 12px 12px 2px;margin:32px 0;}
+.bible-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:24px;}
+.bible-card{display:flex;align-items:center;gap:14px;padding:18px 20px;border-radius:10px;text-decoration:none;border:1px solid rgba(242,237,228,.07);background:rgba(22,21,47,.35);transition:transform .2s,border-color .2s,background .2s;}
+.bible-card:hover{transform:translateX(5px);border-color:rgba(254,126,60,.25);background:rgba(22,21,47,.6);}
+.bible-icon{font-size:24px;flex-shrink:0;}
+.bible-txt .b-title{font-size:13px;font-weight:400;color:var(--cream);line-height:1.3;margin-bottom:2px;}
+.bible-txt .b-store{font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);opacity:.75;}
+.bible-arr{color:var(--cream);opacity:.2;font-size:16px;margin-left:auto;flex-shrink:0;transition:transform .2s,opacity .2s;}
+.bible-card:hover .bible-arr{transform:translateX(4px);opacity:.6;}
+.online-card{margin-top:20px;padding:28px 32px;border-radius:14px;display:flex;align-items:center;gap:24px;border:1px solid rgba(255,165,134,.2);background:rgba(255,165,134,.05);}
+.online-icon{font-size:36px;animation:float 3s ease-in-out infinite alternate;}
+@keyframes float{0%{transform:translateY(0);}100%{transform:translateY(-6px);}}
+.online-txt h3{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:.05em;color:var(--cream);margin-bottom:8px;}
+.online-txt p{font-size:14px;font-weight:300;line-height:1.65;color:var(--dim);margin-bottom:18px;}
+.app-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px;padding-top:28px;border-top:1px solid rgba(242,237,228,.07);}
+.app-btn{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:10px;text-decoration:none;transition:transform .2s,box-shadow .2s;}
+.app-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.3);}
+.app-ios{background:#111;color:#fff;}
+.app-and{background:#3DDC84;color:#000;}
+.app-ico{font-size:22px;}
+.app-lbl{display:flex;flex-direction:column;line-height:1.2;}
+.app-sm{font-size:8px;font-weight:400;letter-spacing:.1em;text-transform:uppercase;opacity:.6;}
+.app-nm{font-size:14px;font-weight:700;}
+
+/* ── WHO I AM ── */
+.who-card{border-radius:16px;padding:36px;max-width:660px;margin-top:28px;}
+
+/* ── COMMUNITY ── */
+.wa-icon{width:72px;height:72px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px;box-shadow:0 12px 32px rgba(37,211,102,.3);animation:breathe 3s ease-in-out infinite;}
+
+/* ── PRAYER ── */
+.prayer-wrap{max-width:600px;margin:0 auto;}
+.prayer-card{border-radius:20px;padding:48px 40px;text-align:center;}
+.prayer-icon{font-size:36px;margin-bottom:16px;display:block;animation:float 4s ease-in-out infinite alternate;}
+.prayer-title{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:.06em;color:var(--cream);margin-bottom:6px;}
+.prayer-text{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,3vw,26px);font-style:italic;line-height:1.7;color:var(--cream);margin:24px 0 32px;}
+
+/* ── FINAL CTA ── */
+.final-ttl{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,12vw,140px);letter-spacing:.04em;line-height:.88;color:var(--cream);}
+.final-ctas{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;position:relative;z-index:2;}
+
+/* ── WAVE DIVIDERS ── */
+.wave{position:relative;line-height:0;overflow:hidden;z-index:1;}
+.wave svg{display:block;width:100%;}
+
+/* ── SCROLL REVEAL ── */
+.rev{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
+.rev.in{opacity:1;transform:translateY(0);}
+.rev-l{opacity:0;transform:translateX(-28px);transition:opacity .7s ease,transform .7s ease;}
+.rev-l.in{opacity:1;transform:translateX(0);}
+.rev-r{opacity:0;transform:translateX(28px);transition:opacity .7s ease,transform .7s ease;}
+.rev-r.in{opacity:1;transform:translateX(0);}
+.d1{transition-delay:.1s}.d2{transition-delay:.18s}.d3{transition-delay:.26s}
+
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── FOOTER ── */
+footer{background:rgba(12,15,18,.95);text-align:center;padding:28px 24px;font-size:11px;font-weight:300;letter-spacing:.1em;color:var(--dimmer);border-top:1px solid rgba(254,126,60,.1);position:relative;z-index:1;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:760px){
+  nav{padding:16px 20px;}
+  .v3{grid-template-columns:1fr;}
+  .sp-layout{flex-direction:column;text-align:center;}
+  .sp-cover{width:180px;height:180px;}
+  .online-card{flex-direction:column;text-align:center;}
+  .bible-grid{grid-template-columns:1fr;}
+  .prayer-card{padding:36px 24px;}
+  section{padding:72px 20px;}
+  .id-grid{grid-template-columns:1fr 1fr;}
+  .mu-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+}
+@media(max-width:420px){
+  .id-grid{grid-template-columns:1fr;}
+  .btn{padding:11px 20px;font-size:11px;}
+  .hero-ctas{flex-direction:column;align-items:center;}
+}
+</style>
+</head>
+<body>
+
+<!-- FLOATING ORBS -->
+<div class="orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<!-- DOT CURSOR -->
+<div id="dot"></div>
+
+<!-- PROGRESS -->
+<div id="prog"></div>
+
+<!-- MODAL INTRO -->
+<div id="modal-id" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-orb1"></div>
+    <div class="modal-orb2"></div>
+    <span class="modal-cross">✝</span>
+    <h2 class="modal-title">¿Estás listo para<br>conocer tu identidad?</h2>
+    <p class="modal-verse">«En esto consiste el amor: no en que nosotros hayamos amado a Dios, sino en que él nos amó a nosotros, y envió a su Hijo en propiciación por nuestros pecados.»</p>
+    <span class="modal-ref">1 Juan 4:10</span>
+    <button id="btn-start">Sí, estoy listo ✝</button>
+    <button id="btn-skip">Continuar sin audio</button>
+    <audio id="bg-audio" loop preload="none">
+      <source src="audio/holy-instrumental.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+</div>
+
+<!-- VERSE MODAL -->
+<div class="vmodal" id="vmodal">
+  <div class="vmodal-box">
+    <button class="vmodal-x" id="vmodal-x">✕</button>
+    <div class="vmodal-icon" id="vi"></div>
+    <div class="vmodal-title" id="vt"></div>
+    <span class="vmodal-ref" id="vr"></span>
+    <blockquote class="vmodal-verse" id="vv"></blockquote>
+    <p class="vmodal-reflection" id="vf"></p>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="#hero">Ekklesia<span>Mx</span></a>
+  <div class="burger" id="burger" role="button" tabindex="0" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- MENU -->
+<div class="menu-ov" id="menuov">
+  <div class="menu-list">
+    <a href="#hero"      onclick="closeMenu()"><span class="mn">00</span>Inicio</a>
+    <a href="#sonado"    onclick="closeMenu()"><span class="mn">01</span>Fuiste Soñado por Dios</a>
+    <a href="#rescate"   onclick="closeMenu()"><span class="mn">02</span>Cristo Te Rescató</a>
+    <a href="#identidad" onclick="closeMenu()"><span class="mn">03</span>¿Quién Eres en Cristo?</a>
+    <a href="#spotify"   onclick="closeMenu()"><span class="mn">04</span>Conecta con tu Origen</a>
+    <a href="#musica"    onclick="closeMenu()"><span class="mn">05</span>Música que Nutre</a>
+    <a href="#palabra"   onclick="closeMenu()"><span class="mn">06</span>La Palabra de Dios</a>
+    <a href="#youtube"   onclick="closeMenu()"><span class="mn">07</span>Canal YouTube</a>
+    <a href="#comunidad" onclick="closeMenu()"><span class="mn">08</span>Comunidad WhatsApp</a>
+    <a href="#oracion"   onclick="closeMenu()"><span class="mn">09</span>Oración de Entrega</a>
+    <a href="#final"     onclick="closeMenu()"><span class="mn">10</span>Comienza Tu Camino</a>
+  </div>
+  <div class="menu-brand">EkklesiaMx</div>
+</div>
+
+<!-- ══ HERO ══ -->
+<section class="hero" id="hero">
+  <p class="hero-eyebrow">EkklesiaMx — Reunión de Discípulos</p>
+  <h1 class="hero-ttl">¿Quién<br>Eres?</h1>
+  <p class="hero-sub">Eres el sueño eterno de Dios<br>y el rescate perfecto de Cristo.</p>
+  <p class="hero-verse-txt">«Tu verdadera identidad comenzó antes de la fundación del mundo y quedó sellada para siempre en la cruz.»</p>
+  <div class="hero-ctas">
+    <a href="https://open.spotify.com/intl-es/track/3nOjFj0WWbsci9foo3o2tk" target="_blank" class="btn btn-fill">▶ Escuchar en Spotify</a>
+    <a href="#identidad" class="btn btn-out">✝ Descubrir mi identidad</a>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wave" style="background:var(--bg);">
+  <svg viewBox="0 0 1440 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="wl1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#0E6873"/><stop offset="50%" style="stop-color:#FE7E3C"/><stop offset="100%" style="stop-color:#E4201B"/></linearGradient></defs>
+    <rect width="1440" height="3" fill="url(#wl1)"/>
+    <path d="M0,30 C360,70 720,0 1080,45 C1260,60 1380,20 1440,35 L1440,70 L0,70Z" fill="var(--bg)"/>
+  </svg>
+</div>
+
+<!-- ══ SECTION 1: SOÑADO ══ -->
+<section id="sonado">
+  <div class="ctr">
+    <div class="rev">
+      <span class="lbl">Sección 01</span>
+      <h2 class="ttl">Fuiste soñado<br>por Dios.</h2>
+      <p class="body">No eres un accidente. No eres producto del azar.<br>Fuiste pensado, amado y diseñado por Dios antes de nacer.</p>
+    </div>
+    <div class="v3">
+      <div class="v3-card rev"><p class="v-text">«Antes que te formara en el vientre te conocí, y antes que nacieras te santifiqué.»</p><span class="v-ref">Jeremías 1:5</span></div>
+      <div class="v3-card rev d1"><p class="v-text">«Nos escogió en él antes de la fundación del mundo, para que fuésemos santos y sin mancha delante de él.»</p><span class="v-ref">Efesios 1:4</span></div>
+      <div class="v3-card rev d2"><p class="v-text">«Porque tú formaste mis entrañas; tú me hiciste en el vientre de mi madre. Te alabaré, porque formidables son tus obras.»</p><span class="v-ref">Salmo 139:13–14</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wave" style="background:var(--bg);">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,20 C240,60 480,0 720,30 C960,60 1200,0 1440,25 L1440,60 L0,60Z" fill="rgba(14,104,115,0.15)"/>
+  </svg>
+</div>
+
+<!-- ══ SECTION 2: RESCATE ══ -->
+<section id="rescate" style="background:rgba(14,104,115,0.06);">
+  <div class="ctr rev">
+    <span class="lbl">Sección 02</span>
+    <h2 class="ttl">La cruz no solo<br>te perdona.<br><span style="color:var(--orange)">Te restaura.</span></h2>
+    <p class="body" style="margin-bottom:32px;">El pecado distorsionó tu propósito. Cristo pagó el precio para restaurarte. En Jesús no solo eres perdonado; eres reconciliado, adoptado y amado.</p>
+    <div class="verse-card rev d1"><p class="v-text">«Mas Dios muestra su amor para con nosotros, en que siendo aún pecadores, Cristo murió por nosotros.»</p><span class="v-ref">Romanos 5:8</span></div>
+    <div class="verse-card rev d2" style="border-left-color:var(--teal);background:rgba(14,104,115,.07);"><p class="v-text">«El cual nos ha librado de la potestad de las tinieblas, y trasladado al reino de su amado Hijo, en quien tenemos redención por su sangre.»</p><span class="v-ref" style="color:var(--teal);">Colosenses 1:13–14</span></div>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wave" style="background:rgba(14,104,115,0.06);">
+  <svg viewBox="0 0 1440 55" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,40 C400,0 800,55 1200,20 C1350,5 1420,45 1440,30 L1440,55 L0,55Z" fill="var(--bg)"/>
+  </svg>
+</div>
+
+<!-- ══ SECTION 3: IDENTIDAD ══ -->
+<section id="identidad">
+  <div class="ctr">
+    <div class="rev">
+      <span class="lbl">Sección 03</span>
+      <h2 class="ttl">¿Quién eres<br>en Cristo?</h2>
+      <p class="body">Ocho verdades bíblicas que definen tu identidad real — toca cada una para descubrirla.</p>
+    </div>
+    <div class="id-grid">
+      <div class="id-card rev"   data-v="hijo">    <span class="id-icon">👑</span><div class="id-name">Hijo de Dios</div>      <div class="id-ref">Juan 1:12</div></div>
+      <div class="id-card rev d1" data-v="nueva">   <span class="id-icon">🌱</span><div class="id-name">Nueva Creación</div>    <div class="id-ref">2 Cor 5:17</div></div>
+      <div class="id-card rev d2" data-v="escogido"><span class="id-icon">⭐</span><div class="id-name">Escogido</div>          <div class="id-ref">Efesios 1:4</div></div>
+      <div class="id-card rev"   data-v="perdonado"><span class="id-icon">✝️</span><div class="id-name">Perdonado</div>         <div class="id-ref">Efesios 1:7</div></div>
+      <div class="id-card rev d1" data-v="libre">   <span class="id-icon">🕊️</span><div class="id-name">Libre</div>            <div class="id-ref">Juan 8:36</div></div>
+      <div class="id-card rev d2" data-v="heredero"><span class="id-icon">🏛️</span><div class="id-name">Heredero de Dios</div> <div class="id-ref">Romanos 8:17</div></div>
+      <div class="id-card rev"   data-v="amado">    <span class="id-icon">❤️</span> <div class="id-name">Amado</div>            <div class="id-ref">Romanos 5:8</div></div>
+      <div class="id-card rev d1" data-v="sellado"> <span class="id-icon">🔥</span><div class="id-name">Sellado por el Espíritu</div><div class="id-ref">Efesios 1:13</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wave" style="background:var(--bg);">
+  <svg viewBox="0 0 1440 50" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="wl2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#E4201B;stop-opacity:.3"/><stop offset="50%" style="stop-color:#FE7E3C;stop-opacity:.4"/><stop offset="100%" style="stop-color:#0E6873;stop-opacity:.3"/></linearGradient></defs>
+    <path d="M0,25 C360,50 720,0 1080,30 C1260,45 1380,10 1440,22 L1440,50 L0,50Z" fill="url(#wl2)"/>
+  </svg>
+</div>
+
+<!-- ══ SPOTIFY ══ -->
+<section id="spotify" style="text-align:center;">
+  <div class="ctr rev">
+    <span class="lbl">Conecta con tu origen</span>
+    <h2 class="ttl" style="max-width:700px;margin:0 auto 14px;">Escucha la canción</h2>
+    <p class="body" style="margin:0 auto;max-width:480px;text-align:center;">Una canción que te lleva de regreso a quien realmente eres.</p>
+    <div class="sp-layout">
+      <div class="sp-cover">
+        <img id="sp-img" alt="Portada"/>
+        <div class="sp-loader" id="sp-load">
+          <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm4.65 14.42a.62.62 0 0 1-.86.21 7.48 7.48 0 0 0-4.22-1.19 14.65 14.65 0 0 0-3.06.38.62.62 0 0 1-.29-1.21 16 16 0 0 1 3.35-.42 8.72 8.72 0 0 1 4.87 1.37.62.62 0 0 1 .21.86zm1.24-2.77a.78.78 0 0 1-1.07.26 9.36 9.36 0 0 0-5.27-1.49 15.21 15.21 0 0 0-3.23.41.77.77 0 0 1-.35-1.5 16.72 16.72 0 0 1 3.58-.46 10.89 10.89 0 0 1 6.08 1.71.77.77 0 0 1 .26 1.07zm.11-2.89a.93.93 0 0 1-1.28.32A11.18 11.18 0 0 0 10.43 9a17.22 17.22 0 0 0-3.56.44.93.93 0 1 1-.42-1.81 19.06 19.06 0 0 1 3.98-.49 13 13 0 0 1 7.29 2.16.93.93 0 0 1 .32 1.28z"/></svg>
+        </div>
+      </div>
+      <div class="sp-info">
+        <span class="sp-lbl">Canción principal</span>
+        <div class="sp-title" id="sp-title">Cargando...</div>
+        <div class="sp-artist" id="sp-artist"><span>Spotify</span></div>
+        <a href="https://open.spotify.com/intl-es/track/3nOjFj0WWbsci9foo3o2tk" target="_blank" class="btn btn-spotify">▶ Escuchar en Spotify</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wave" style="background:var(--bg);">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,40 C300,10 600,60 900,25 C1100,5 1320,55 1440,30 L1440,60 L0,60Z" fill="rgba(14,104,115,0.1)"/>
+  </svg>
+</div>
+
+<!-- ══ MÚSICA ══ -->
+<section id="musica" style="background:rgba(14,104,115,0.05);text-align:center;">
+  <div class="ctr rev">
+    <span class="lbl">Para el camino</span>
+    <h2 class="ttl">Música que<br>nutre el alma.</h2>
+    <p class="body" style="margin:0 auto;text-align:center;">Canciones que acompañan el proceso de descubrir tu identidad en Cristo.</p>
+    <div class="mu-grid" id="muGrid"></div>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wave" style="background:rgba(14,104,115,0.05);">
+  <svg viewBox="0 0 1440 65" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,10 C400,65 900,0 1200,45 C1350,65 1430,15 1440,30 L1440,65 L0,65Z" fill="var(--bg)"/>
+  </svg>
+</div>
+
+<!-- ══ LA PALABRA ══ -->
+<section id="palabra">
+  <div class="ctr rev" style="position:relative;z-index:2;">
+    <span class="lbl">Tu herramienta más poderosa</span>
+    <h2 class="ttl">La Palabra de Dios:<br><span style="color:var(--orange)">espada de doble filo.</span></h2>
+    <p class="body">La Biblia no es solo un libro antiguo — es la voz viva de Dios que habla directamente al alma.</p>
+    <div class="bible-verse rev d1">
+      <p class="v-text">«Porque la palabra de Dios es viva y eficaz, y más cortante que toda espada de dos filos; penetra hasta partir el alma y el espíritu, los pensamientos y las intenciones del corazón.»</p>
+      <span class="v-ref">Hebreos 4:12</span>
+    </div>
+    <span class="lbl" style="margin-top:40px;">📖 Consigue tu Biblia NTV</span>
+    <div class="bible-grid rev d1">
+      <a href="https://www.amazon.com.mx" target="_blank" rel="noopener" class="bible-card"><span class="bible-icon">📗</span><div class="bible-txt"><div class="b-title">Edición Personal SentiPiel Jardín Morado</div><div class="b-store">Amazon México</div></div><span class="bible-arr">→</span></a>
+      <a href="https://www.amazon.com.mx/Santa-Biblia-Edici%C3%B3n-Referencias-Grande/dp/149648102X" target="_blank" rel="noopener" class="bible-card"><span class="bible-icon">📘</span><div class="bible-txt"><div class="b-title">Edición Referencia Ultrafina SentiPiel Azul</div><div class="b-store">Amazon México</div></div><span class="bible-arr">→</span></a>
+      <a href="https://www.amazon.com.mx" target="_blank" rel="noopener" class="bible-card"><span class="bible-icon">📙</span><div class="bible-txt"><div class="b-title">Edición Referencia Ultrafina SentiPiel Café</div><div class="b-store">Amazon México</div></div><span class="bible-arr">→</span></a>
+      <a href="https://www.mercadolibre.com.mx/santa-biblia-letra-grande-ntv-edicion-de-referencia-ultrafina-imitacion-crema-flores-de-ntv-vol-1-editorial-tyndalle-tapa-blanda-en-espanol-2022/p/MLM49703653" target="_blank" rel="noopener" class="bible-card"><span class="bible-icon">🌸</span><div class="bible-txt"><div class="b-title">Edición Referencia Ultrafina Flores Crema</div><div class="b-store">Mercado Libre México</div></div><span class="bible-arr">→</span></a>
+      <a href="https://www.buscalibre.com.mx/libro-santa-biblia-ntv-edicion-personal-letra-grande/9781496479341/p/54464647" target="_blank" rel="noopener" class="bible-card"><span class="bible-icon">📓</span><div class="bible-txt"><div class="b-title">Edición Personal Cubierta Clásica</div><div class="b-store">Buscalibre México</div></div><span class="bible-arr">→</span></a>
+      <a href="https://www.buscalibre.com.mx/libro-santa-biblia-ntv-edicion-compacta-letra-grande/9781496428431/p/50008812" target="_blank" rel="noopener" class="bible-card"><span class="bible-icon">✨</span><div class="bible-txt"><div class="b-title">Edición Compacta Letra Grande Canto Dorado</div><div class="b-store">Buscalibre México</div></div><span class="bible-arr">→</span></a>
+      <a href="https://www.libreriamaranatha.com/articulo/biblia-referencia-ultra-fina-letra-grande-ntv-azul/" target="_blank" rel="noopener" class="bible-card"><span class="bible-icon">💙</span><div class="bible-txt"><div class="b-title">Edición Referencia Ultrafina SentiPiel Azul</div><div class="b-store">Librería Maranatha</div></div><span class="bible-arr">→</span></a>
+      <a href="https://librerialevitico.com/collections/nueva-traduccion-viviente-ntv" target="_blank" rel="noopener" class="bible-card"><span class="bible-icon">🩶</span><div class="bible-txt"><div class="b-title">Edición Manual SentiPiel Color Gris</div><div class="b-store">Librería Levítico</div></div><span class="bible-arr">→</span></a>
+    </div>
+    <div class="online-card rev d2">
+      <div class="online-icon">🌐</div>
+      <div class="online-txt">
+        <h3>Lee Online Gratis</h3>
+        <p>Antes de leer, pide la dirección de Dios a través de su precioso Espíritu. La intimidad con Dios se crea en lo profundo con el Espíritu Santo.</p>
+        <a href="https://www.bible.com/es/bible/127/MAT.1.NTV" target="_blank" rel="noopener" class="btn btn-bible">📖 Leer la Biblia NTV Online</a>
+      </div>
+    </div>
+    <div class="app-row rev">
+      <a href="https://apps.apple.com/mx/app/biblia/id282935706" target="_blank" rel="noopener" class="app-btn app-ios"><span class="app-ico">🍎</span><span class="app-lbl"><span class="app-sm">Descargar en</span><span class="app-nm">App Store</span></span></a>
+      <a href="https://play.google.com/store/apps/details?id=com.sirma.mobile.bible.android" target="_blank" rel="noopener" class="app-btn app-and"><span class="app-ico">🤖</span><span class="app-lbl"><span class="app-sm">Disponible en</span><span class="app-nm">Google Play</span></span></a>
+    </div>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wave" style="background:var(--bg);">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,0 C360,60 1080,0 1440,40 L1440,60 L0,60Z" fill="rgba(228,32,27,0.08)"/>
+  </svg>
+</div>
+
+<!-- ══ YOUTUBE ══ -->
+<section id="youtube" style="background:rgba(228,32,27,0.04);text-align:center;">
+  <div class="ctr rev">
+    <span class="lbl">Profundiza en la Palabra</span>
+    <h2 class="ttl">EkklesiaMx</h2>
+    <p class="body" style="margin:0 auto 36px;text-align:center;">Identidad · Fe · Discipulado<br><br>Reflexiones desde el corazón de un hijo más de Dios que sigue aprendiendo, creciendo y compartiendo el evangelio.</p>
+    <a href="https://youtube.com/@cronicasdeuncaminante-japm" target="_blank" class="btn btn-red" style="font-size:13px;padding:14px 36px;">▶ Visitar el canal</a>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wave" style="background:rgba(228,32,27,0.04);">
+  <svg viewBox="0 0 1440 55" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,35 C300,5 700,55 1000,20 C1200,0 1360,50 1440,30 L1440,55 L0,55Z" fill="var(--bg)"/>
+  </svg>
+</div>
+
+<!-- ══ QUIÉN SOY ══ -->
+<section>
+  <div class="ctr rev">
+    <span class="lbl">Una nota personal</span>
+    <h2 class="ttl">No soy teólogo.<br><span style="color:var(--orange)">Soy caminante.</span></h2>
+    <div class="dk-card who-card">
+      <p style="font-size:17px;font-weight:300;line-height:1.8;color:var(--dim);">No vengo con títulos ni credenciales religiosas. Soy un hijo más de Dios, redimido a través de Cristo, que sigue aprendiendo, fallando y levantándose.<br><br>Lo único que me mueve es lo que Jesús mismo nos encargó: <em style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--peach);">«Id y haced discípulos a todas las naciones.»</em><br><br>Este espacio no es de un experto — es de un caminante que encontró el Camino.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ COMUNIDAD ══ -->
+<section id="comunidad" style="text-align:center;">
+  <div class="ctr rev">
+    <span class="lbl">Únete a la comunidad</span>
+    <div class="wa-icon">💬</div>
+    <h2 class="ttl" style="max-width:480px;margin:0 auto 16px;">El camino no<br>se recorre solo.</h2>
+    <p class="body" style="text-align:center;margin:0 auto 36px;max-width:440px;">Una comunidad de caminantes hambrientos de la Palabra, creciendo juntos en Cristo.</p>
+    <div class="verse-card rev d1" style="max-width:540px;margin:0 auto 36px;">
+      <p class="v-text">«No dejando de congregarnos, como algunos tienen por costumbre, sino exhortándonos; y tanto más, cuanto veis que aquel día se acerca.»</p>
+      <span class="v-ref">Hebreos 10:25</span>
+    </div>
+    <a href="https://chat.whatsapp.com/DZ5nHmxozEn42pV8tonkN2?mode=gi_t" target="_blank" class="btn btn-green" style="font-size:13px;padding:14px 36px;">💬 Unirme al WhatsApp</a>
+  </div>
+</section>
+
+<!-- ══ ORACIÓN ══ -->
+<section id="oracion">
+  <div class="prayer-wrap">
+    <div class="prayer-card dk-card rev">
+      <span class="prayer-icon">🙏</span>
+      <span class="lbl" style="display:block;text-align:center;">Oración de Entrega</span>
+      <h3 class="prayer-title">Comienza tu camino</h3>
+      <p class="prayer-text">Jesús,<br>reconozco que me amas,<br>me diseñaste y moriste por mí.<br><br>Hoy te recibo como Señor y Salvador.<br>Amén.</p>
+      <div class="verse-card" style="text-align:left;margin-bottom:32px;"><p class="v-text">«Yo soy el camino, y la verdad, y la vida; nadie viene al Padre, sino por mí.»</p><span class="v-ref">Juan 14:6</span></div>
+      <a href="https://chat.whatsapp.com/DZ5nHmxozEn42pV8tonkN2?mode=gi_t" target="_blank" class="btn" style="background:linear-gradient(135deg,var(--orange),var(--red));color:#fff;font-size:13px;padding:14px 36px;">✝ He decidido seguir a Cristo</a>
+    </div>
+  </div>
+</section>
+
+<!-- wave -->
+<div class="wave" style="background:var(--bg);">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="wl3" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:var(--teal);stop-opacity:.2"/><stop offset="100%" style="stop-color:var(--orange);stop-opacity:.2"/></linearGradient></defs>
+    <path d="M0,20 C480,60 960,0 1440,35 L1440,60 L0,60Z" fill="url(#wl3)"/>
+  </svg>
+</div>
+
+<!-- ══ FINAL ══ -->
+<section id="final" style="text-align:center;padding-bottom:120px;position:relative;overflow:hidden;z-index:1;">
+  <div class="ctr rev">
+    <span class="lbl">El inicio de una nueva historia</span>
+    <h2 class="final-ttl">EkklesiaMx.</h2>
+    <p class="body" style="margin:16px auto 44px;text-align:center;max-width:480px;">Hoy puede ser el inicio de una nueva historia. No camines solo.</p>
+    <div class="final-ctas">
+      <a href="https://open.spotify.com/intl-es/track/3nOjFj0WWbsci9foo3o2tk" target="_blank" class="btn btn-fill">▶ Spotify</a>
+      <a href="https://youtube.com/@cronicasdeuncaminante-japm" target="_blank" class="btn btn-red">YouTube</a>
+      <a href="https://chat.whatsapp.com/DZ5nHmxozEn42pV8tonkN2?mode=gi_t" target="_blank" class="btn btn-green">💬 WhatsApp</a>
+      <a href="#identidad" class="btn btn-out">✝ Mi identidad</a>
+    </div>
+  </div>
+</section>
+
+<footer>© EkklesiaMx · «Mas a todos los que le recibieron, les dio potestad de ser hechos hijos de Dios.» — Juan 1:12</footer>
+
+<script>
+/* ── DOT CURSOR ── */
+const dot = document.getElementById('dot');
+window.addEventListener('mousemove', e => {
+  dot.style.left = e.clientX + 'px';
+  dot.style.top  = e.clientY + 'px';
+}, {passive:true});
+document.addEventListener('mousedown', () => dot.style.transform = 'translate(-50%,-50%) scale(1.8)');
+document.addEventListener('mouseup',   () => dot.style.transform = 'translate(-50%,-50%) scale(1)');
+
+/* ── PROGRESS ── */
+const prog = document.getElementById('prog');
+window.addEventListener('scroll', () => {
+  prog.style.width = (window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100) + '%';
+},{passive:true});
+
+/* ── HAMBURGER ── */
+const burger = document.getElementById('burger');
+const menuov = document.getElementById('menuov');
+let mopen = false;
+function closeMenu(){
+  mopen=false; burger.classList.remove('open'); menuov.classList.remove('open'); document.body.style.overflow='';
+}
+burger.addEventListener('click', () => {
+  mopen=!mopen; burger.classList.toggle('open',mopen); menuov.classList.toggle('open',mopen);
+  document.body.style.overflow = mopen ? 'hidden' : '';
+});
+menuov.addEventListener('click', e => { if(e.target===menuov) closeMenu(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeMenu(); });
+
+/* ── ACTIVE SECTION IN MENU ── */
+const secs = document.querySelectorAll('section[id]');
+const mlinks = document.querySelectorAll('.menu-list a');
+function updateActive(){
+  let cur='';
+  secs.forEach(s => { if(window.scrollY >= s.offsetTop-160) cur=s.id; });
+  mlinks.forEach(a => a.classList.toggle('act', a.getAttribute('href')==='#'+cur));
+}
+window.addEventListener('scroll', updateActive, {passive:true});
+
+/* ── MODAL ── */
+const modal = document.getElementById('modal-id');
+const audio = document.getElementById('bg-audio');
+if(audio) audio.volume = 0.2;
+function closeModal(play){
+  modal.classList.add('out'); document.body.style.overflow='';
+  if(play && audio) audio.play().catch(()=>{});
+}
+document.body.style.overflow='hidden';
+document.getElementById('btn-start').addEventListener('click', () => closeModal(true));
+document.getElementById('btn-skip').addEventListener('click',  () => closeModal(false));
+
+/* ── VERSE MODAL ── */
+const vData = {
+  hijo:     {i:'👑',t:'Hijo de Dios',r:'Juan 1:12',v:'«Mas a todos los que le recibieron, a los que creen en su nombre, les dio potestad de ser hechos hijos de Dios.»',f:'No eres un huérfano espiritual. Por la fe en Cristo, Dios te adopta en su familia. Su amor paternal es eterno, real y sin condiciones.'},
+  nueva:    {i:'🌱',t:'Nueva Creación',r:'2 Corintios 5:17',v:'«De modo que si alguno está en Cristo, nueva criatura es; las cosas viejas pasaron; todas son hechas nuevas.»',f:'Tu pasado no define tu futuro. En Cristo no eres una versión mejorada — eres completamente nuevo.'},
+  escogido: {i:'⭐',t:'Escogido',r:'Efesios 1:4',v:'«Según nos escogió en él antes de la fundación del mundo, para que fuésemos santos y sin mancha delante de él.»',f:'Antes de que el universo existiera, Dios ya te había elegido. Eres una decisión eterna de su corazón.'},
+  perdonado:{i:'✝️',t:'Perdonado',r:'Efesios 1:7',v:'«En quien tenemos redención por su sangre, el perdón de pecados según las riquezas de su gracia.»',f:'El perdón que Dios ofrece es completo, abundante. Lo que Cristo pagó en la cruz fue suficiente — para siempre.'},
+  libre:    {i:'🕊️',t:'Libre',r:'Juan 8:36',v:'«Así que, si el Hijo os libertare, seréis verdaderamente libres.»',f:'La libertad que Cristo da es profunda: libre del miedo, de la culpa, de la esclavitud al pecado. Verdaderamente libre.'},
+  heredero: {i:'🏛️',t:'Heredero de Dios',r:'Romanos 8:17',v:'«Y si hijos, también herederos; herederos de Dios y coherederos con Cristo.»',f:'No solo eres hijo — eres heredero. Todo lo que Cristo posee lo comparte contigo. Tu herencia es eterna.'},
+  amado:    {i:'❤️',t:'Amado',r:'Romanos 5:8',v:'«Mas Dios muestra su amor para con nosotros, en que siendo aún pecadores, Cristo murió por nosotros.»',f:'Dios no esperó a que lo merecieras. Te amó en tu peor momento. Su amor no depende de ti, depende de Él.'},
+  sellado:  {i:'🔥',t:'Sellado por el Espíritu',r:'Efesios 1:13',v:'«Habiendo creído en él, fuisteis sellados con el Espíritu Santo de la promesa.»',f:'El Espíritu Santo dentro de ti es la garantía de Dios. No puedes perder lo que Dios mismo garantiza.'}
+};
+const vm=document.getElementById('vmodal');
+function openV(k){
+  const d=vData[k]; if(!d) return;
+  document.getElementById('vi').textContent=d.i;
+  document.getElementById('vt').textContent=d.t;
+  document.getElementById('vr').textContent=d.r;
+  document.getElementById('vv').textContent=d.v;
+  document.getElementById('vf').textContent=d.f;
+  vm.classList.add('open'); document.body.style.overflow='hidden';
+}
+function closeV(){vm.classList.remove('open'); document.body.style.overflow='';}
+document.querySelectorAll('.id-card[data-v]').forEach(c=>c.addEventListener('click',()=>openV(c.dataset.v)));
+document.getElementById('vmodal-x').addEventListener('click',closeV);
+vm.addEventListener('click',e=>{if(e.target===vm)closeV();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeV();});
+
+/* ── SPOTIFY COVER ── */
+async function loadMainCover(){
+  try{
+    const r=await fetch('https://open.spotify.com/oembed?url=https://open.spotify.com/track/3nOjFj0WWbsci9foo3o2tk');
+    const d=await r.json();
+    const img=document.getElementById('sp-img');
+    img.src=d.thumbnail_url;
+    img.onload=()=>{img.classList.add('on');document.getElementById('sp-load').style.display='none';};
+    if(d.title) document.getElementById('sp-title').textContent=d.title;
+    if(d.author_name) document.getElementById('sp-artist').innerHTML='<span>'+d.author_name+'</span>';
+  }catch(e){}
+}
+loadMainCover();
+
+/* ── MUSIC GRID ── */
+const TRACKS=['0llyb5ras72fMreXOD6dF6','1pBpi80veBX5asqtMMUiUs','3tJfmzbcaXsEy0sO8PojuG','0jmGfY8cZGG9Hgy1rbeGrz','18Bz4yDxHvSsGlDS3k5G5O','2fiipYqBHxBV2IA2Kk6qVq','02W84sfwDnnyDO4m3VsaTr','1MeYf9Z6Fr1XK74NoCMFHp','5zWO0RXbVaoOqgx9wUrY7O'];
+const GRADS=['linear-gradient(135deg,#FE7E3C,#E4201B)','linear-gradient(135deg,#0E6873,#16152F)','linear-gradient(135deg,#E4201B,#61413C)','linear-gradient(135deg,#FFA586,#FE7E3C)','linear-gradient(135deg,#16152F,#0E6873)','linear-gradient(135deg,#61413C,#E4201B)','linear-gradient(135deg,#FE7E3C,#0E6873)','linear-gradient(135deg,#E4201B,#FFA586)','linear-gradient(135deg,#0E6873,#FE7E3C)'];
+const spSVG='<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm4.65 14.42a.62.62 0 0 1-.86.21 7.48 7.48 0 0 0-4.22-1.19 14.65 14.65 0 0 0-3.06.38.62.62 0 0 1-.29-1.21 16 16 0 0 1 3.35-.42 8.72 8.72 0 0 1 4.87 1.37.62.62 0 0 1 .21.86zm1.24-2.77a.78.78 0 0 1-1.07.26 9.36 9.36 0 0 0-5.27-1.49 15.21 15.21 0 0 0-3.23.41.77.77 0 0 1-.35-1.5 16.72 16.72 0 0 1 3.58-.46 10.89 10.89 0 0 1 6.08 1.71.77.77 0 0 1 .26 1.07zm.11-2.89a.93.93 0 0 1-1.28.32A11.18 11.18 0 0 0 10.43 9a17.22 17.22 0 0 0-3.56.44.93.93 0 1 1-.42-1.81 19.06 19.06 0 0 1 3.98-.49 13 13 0 0 1 7.29 2.16.93.93 0 0 1 .32 1.28z"/></svg>';
+const playSVG='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+const grid=document.getElementById('muGrid');
+TRACKS.forEach((id,i)=>{
+  const a=document.createElement('a');
+  a.className='mu-card loading rev'+(i%3===1?' d1':i%3===2?' d2':'');
+  a.href='https://open.spotify.com/track/'+id;
+  a.target='_blank'; a.rel='noopener noreferrer'; a.dataset.id=id;
+  a.innerHTML='<div class="mu-cover" style="background:'+GRADS[i]+'"><img alt="Cover"/><div class="mu-sk">'+spSVG+'</div><div class="mu-play">'+playSVG+'</div></div><div class="mu-info"><div class="mu-name">Cargando...</div><div class="mu-artist">—</div><div class="mu-badge">'+spSVG+' Spotify</div></div>';
+  grid.appendChild(a);
+});
+async function loadTrack(id,i){
+  await new Promise(r=>setTimeout(r,i*200));
+  try{
+    const res=await fetch('https://open.spotify.com/oembed?url=https://open.spotify.com/track/'+id);
+    const d=await res.json();
+    const card=grid.querySelector('[data-id="'+id+'"]');
+    if(!card) return; card.classList.remove('loading');
+    const img=card.querySelector('img'), sk=card.querySelector('.mu-sk');
+    img.src=d.thumbnail_url;
+    img.onload=()=>{img.classList.add('on');sk.style.display='none';};
+    card.querySelector('.mu-name').textContent=d.title||'Canción';
+    card.querySelector('.mu-artist').textContent=d.author_name||'Artista';
+  }catch(e){
+    const card=grid.querySelector('[data-id="'+id+'"]');
+    if(card){card.classList.remove('loading');card.querySelector('.mu-name').textContent='Abrir en Spotify';}
+  }
+}
+TRACKS.forEach((id,i)=>loadTrack(id,i));
+
+/* ── SCROLL REVEAL ── */
+const revEls=document.querySelectorAll('.rev,.rev-l,.rev-r');
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.1});
+revEls.forEach(el=>obs.observe(el));
+
+/* ── SMOOTH SCROLL ── */
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{
+  const t=document.querySelector(a.getAttribute('href'));
+  if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}
+}));
+</script>
+</body>
+</html>
